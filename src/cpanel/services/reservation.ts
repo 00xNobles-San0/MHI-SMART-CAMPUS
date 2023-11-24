@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
-import firebaseConfig from "../../firebase-key.json";
+import firebaseConfig from "../../../firebase.json";
 import { Reservation } from "../models/reservationModels";
 import ParkingSpaceService from "../services/parkingspace"
 // Initialize Firebase
