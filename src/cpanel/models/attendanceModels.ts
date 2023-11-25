@@ -1,4 +1,4 @@
-interface Attendance {
+export interface Attendance {
   id: string; 
   userId: string; 
   status: string;

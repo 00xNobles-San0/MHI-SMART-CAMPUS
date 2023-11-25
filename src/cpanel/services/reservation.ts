@@ -1,65 +1,78 @@
+// ReservationService.ts
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, updateDoc, getDocs } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-
 import firebaseConfig from "../../../firebase.json";
 import { Reservation } from "../models/reservationModels";
-import ParkingSpaceService from "../services/parkingspace"
+import ParkingSpaceService from "../services/parkingspace";
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const space = new ParkingSpaceService()
+
 class ReservationService {
   private firestore;
-  ref: any;
+  private collectionRef;
+  private parkingSpaceService;
 
   constructor() {
     this.firestore = getFirestore(app);
-    this.ref = doc(this.firestore, 'mhismart_campus', 'reservation')
+    this.collectionRef = collection(this.firestore, 'reservation');
+    this.parkingSpaceService = new ParkingSpaceService();
   }
 
-  // Helper function to get a reservation document reference by ID
   private getReservationDocRef(reservationId: string) {
-    return doc(this.firestore, 'mhismart_campus', 'reservation', reservationId,"reservation_data");
+    return doc(this.firestore, 'reservation', reservationId);
   }
 
-  // Create a new reservation
+  async getReservations() {
+    const querySnapshot = await getDocs(this.collectionRef);
+    const documents = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      data: doc.data() as Reservation,
+    }));
+    return documents;
+  }
+
   async createReservation(userId: string) {
     const newReservationId = uuidv4();
-    const reservationDocRef = this.ref
-    const reservationCollectionRef = collection(reservationDocRef, newReservationId);
-    const namedDocRef = doc(reservationCollectionRef, 'reservation_data');
-    const spaces = await space.getParkingSpaces()
-    spaces.forEach(space => {
-      space
+    const reservationDocRef = doc(this.collectionRef, newReservationId);
+    const spaces = await this.parkingSpaceService.getParkingSpaces();
+    let reservation: Reservation | undefined;
+
+    spaces.some((space) => {
+      if (space.data.status === "empty") {
+        reservation = {
+          id: newReservationId,
+          userId,
+          parkingSpaceId: space.id,
+          key: "",
+          status: "pending",
+          location: space.data.location,
+        };
+        return true;
+      }
+      return false;
     });
-    const reservation = {}
-    await setDoc(namedDocRef,reservation );
+
+    await setDoc(reservationDocRef, reservation);
     return newReservationId;
   }
 
-  // Read reservation by ID
   async getReservationById(reservationId: string) {
-    const reservationDocRef =  this.getReservationDocRef(reservationId);
+    const reservationDocRef = this.getReservationDocRef(reservationId);
     const reservationSnapshot = await getDoc(reservationDocRef);
-    if (reservationSnapshot.exists()) {
-      return reservationSnapshot.data();
-    } else {
-      return null;
-    }
+    return reservationSnapshot.exists() ? reservationSnapshot.data() : null;
   }
 
-  // Update reservation by ID
   async updateReservation(reservationId: string, updatedReservationData: Partial<Reservation>) {
     const reservationDocRef = this.getReservationDocRef(reservationId);
     await updateDoc(reservationDocRef, updatedReservationData);
   }
 
-  // Delete reservation by ID
   async deleteReservation(reservationId: string) {
     const reservationDocRef = this.getReservationDocRef(reservationId);
     await deleteDoc(reservationDocRef);
   }
-
 }
 
 export default ReservationService;

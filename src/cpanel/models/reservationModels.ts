@@ -4,4 +4,5 @@ export interface Reservation {
   parkingSpaceId: string; 
   key: string;
   status: string;
+  location:string
 }
