@@ -8,3 +8,8 @@ for (let i = 1; i < 10; i++) {
         type:"car"
     })
 }
+console.log(await space.getParkingSpaces())
+
+// parking_spaces
+// reservation
+// users
