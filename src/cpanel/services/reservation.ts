@@ -21,7 +21,7 @@ class ReservationService {
   }
 
   private getReservationDocRef(reservationId: string) {
-    return doc(this.firestore, 'reservation', reservationId);
+    return doc(this.collectionRef, reservationId);
   }
 
   async getReservations() {
@@ -35,28 +35,26 @@ class ReservationService {
 
   async createReservation(userId: string) {
     const newReservationId = uuidv4();
-    const reservationDocRef = doc(this.collectionRef, newReservationId);
     const spaces = await this.parkingSpaceService.getParkingSpaces();
-    let reservation: Reservation | undefined;
-
-    spaces.some((space) => {
-      if (space.data.status === "empty") {
-        reservation = {
-          id: newReservationId,
-          userId,
-          parkingSpaceId: space.id,
-          key: "",
-          status: "pending",
-          location: space.data.location,
-        };
-        return true;
-      }
-      return false;
-    });
-
+    const emptySpace = spaces.find(space => space.data.status === "empty");
+    if (!emptySpace) {
+      return null; 
+    }
+    const { id: parkingSpaceId, location } = emptySpace.data;
+    const reservation: Reservation = {
+      id: newReservationId,
+      userId,
+      parkingSpaceId,
+      key: "",
+      status: "pending",
+      location,
+    };
+    const reservationDocRef = doc(this.collectionRef, newReservationId);
     await setDoc(reservationDocRef, reservation);
     return newReservationId;
   }
+  
+  
 
   async getReservationById(reservationId: string) {
     const reservationDocRef = this.getReservationDocRef(reservationId);
