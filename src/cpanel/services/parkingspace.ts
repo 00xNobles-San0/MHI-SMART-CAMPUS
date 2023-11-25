@@ -18,7 +18,7 @@ class ParkingSpaceService {
   }
 
   private getParkingSpaceDocRef(spaceId: string) {
-    return doc(this.firestore, 'parking_spaces', spaceId);
+    return doc(this.collectionRef, spaceId);
   }
 
   async createParkingSpace(space: ParkingSpace) {
