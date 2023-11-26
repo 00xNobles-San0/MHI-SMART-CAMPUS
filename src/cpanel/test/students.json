@@ -1,0 +1,72 @@
+[
+  {
+    "userId": "1",
+    "name": "John Doe",
+    "role": "student",
+    "email": "john.doe@example.com",
+    "phoneNumber": "+1234567890"
+  },
+  {
+    "userId": "2",
+    "name": "Jane Doe",
+    "role": "student",
+    "email": "jane.doe@example.com",
+    "phoneNumber": "+9876543210"
+  },
+  {
+    "userId": "3",
+    "name": "Alice Johnson",
+    "role": "student",
+    "email": "alice.johnson@example.com",
+    "phoneNumber": "+1112233445"
+  },
+  {
+    "userId": "4",
+    "name": "Bob Smith",
+    "role": "student",
+    "email": "bob.smith@example.com",
+    "phoneNumber": "+5556667777"
+  },
+  {
+    "userId": "5",
+    "name": "Eva Martinez",
+    "role": "student",
+    "email": "eva.martinez@example.com",
+    "phoneNumber": "+9998887777"
+  },
+  {
+    "userId": "6",
+    "name": "David Brown",
+    "role": "student",
+    "email": "david.brown@example.com",
+    "phoneNumber": "+1239874560"
+  },
+  {
+    "userId": "7",
+    "name": "Sophie Wilson",
+    "role": "student",
+    "email": "sophie.wilson@example.com",
+    "phoneNumber": "+7778889999"
+  },
+  {
+    "userId": "8",
+    "name": "Alex Turner",
+    "role": "student",
+    "email": "alex.turner@example.com",
+    "phoneNumber": "+4443332222"
+  },
+  {
+    "userId": "9",
+    "name": "Grace Davis",
+    "role": "student",
+    "email": "grace.davis@example.com",
+    "phoneNumber": "+1122334455"
+  },
+  {
+    "userId": "10",
+    "name": "Ryan Miller",
+    "role": "student",
+    "email": "ryan.miller@example.com",
+    "phoneNumber": "+6665554444"
+  }
+]
