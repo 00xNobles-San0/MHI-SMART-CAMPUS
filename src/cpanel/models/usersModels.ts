@@ -1,10 +1,11 @@
-
 export interface User {
-  id?:string
+  id:string
+  userId:string;
   name: string;
-  userName: string;
-  password: string;
+  username?: string;
+  password?: string;
   role: string;
   email: string;
   phoneNumber: string;
+  firebaseUid?:string
 } 

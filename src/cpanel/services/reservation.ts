@@ -25,51 +25,78 @@ class ReservationService {
   }
 
   async getReservations() {
-    const querySnapshot = await getDocs(this.collectionRef);
-    const documents = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      data: doc.data() as Reservation,
-    }));
-    return documents;
+    try {
+      const querySnapshot = await getDocs(this.collectionRef);
+      const documents = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data() as Reservation,
+      }));
+      return documents;
+    } catch (error) {
+      console.error('Error getting reservations:', error);
+      throw error;
+    }
   }
 
   async createReservation(userId: string) {
-    const newReservationId = uuidv4();
-    const spaces = await this.parkingSpaceService.getParkingSpaces();
-    const emptySpace = spaces.find(space => space.data.status === "empty");
-    if (!emptySpace) {
-      return null; 
+    try {
+      const newReservationId = uuidv4();
+      const spaces = await this.parkingSpaceService.getParkingSpaces();
+      const emptySpace = spaces.find(space => space.data.status === "empty");
+  
+      if (!emptySpace) {
+        return null; 
+      }
+  
+      const { id: parkingSpaceId, location } = emptySpace.data;
+      const reservation: Reservation = {
+        id: newReservationId,
+        userId,
+        parkingSpaceId,
+        key: "",
+        status: "pending",
+        location,
+      };
+  
+      const reservationDocRef = doc(this.collectionRef, newReservationId);
+      await setDoc(reservationDocRef, reservation);
+  
+      return newReservationId;
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+      throw error;
     }
-    const { id: parkingSpaceId, location } = emptySpace.data;
-    const reservation: Reservation = {
-      id: newReservationId,
-      userId,
-      parkingSpaceId,
-      key: "",
-      status: "pending",
-      location,
-    };
-    const reservationDocRef = doc(this.collectionRef, newReservationId);
-    await setDoc(reservationDocRef, reservation);
-    return newReservationId;
   }
   
-  
-
   async getReservationById(reservationId: string) {
-    const reservationDocRef = this.getReservationDocRef(reservationId);
-    const reservationSnapshot = await getDoc(reservationDocRef);
-    return reservationSnapshot.exists() ? reservationSnapshot.data() : null;
+    try {
+      const reservationDocRef = this.getReservationDocRef(reservationId);
+      const reservationSnapshot = await getDoc(reservationDocRef);
+      return reservationSnapshot.exists() ? reservationSnapshot.data() : null;
+    } catch (error) {
+      console.error(`Error getting reservation with ID ${reservationId}:`, error);
+      throw error;
+    }
   }
 
   async updateReservation(reservationId: string, updatedReservationData: Partial<Reservation>) {
-    const reservationDocRef = this.getReservationDocRef(reservationId);
-    await updateDoc(reservationDocRef, updatedReservationData);
+    try {
+      const reservationDocRef = this.getReservationDocRef(reservationId);
+      await updateDoc(reservationDocRef, updatedReservationData);
+    } catch (error) {
+      console.error(`Error updating reservation with ID ${reservationId}:`, error);
+      throw error;
+    }
   }
 
   async deleteReservation(reservationId: string) {
-    const reservationDocRef = this.getReservationDocRef(reservationId);
-    await deleteDoc(reservationDocRef);
+    try {
+      const reservationDocRef = this.getReservationDocRef(reservationId);
+      await deleteDoc(reservationDocRef);
+    } catch (error) {
+      console.error(`Error deleting reservation with ID ${reservationId}:`, error);
+      throw error;
+    }
   }
 }
 
